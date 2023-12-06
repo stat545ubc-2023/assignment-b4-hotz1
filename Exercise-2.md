@@ -3,7 +3,7 @@ a de-buig to-bot eep-beesh mish-befl (A Guide to Sheep Flemish)
 
 In this document, we describe the process of translating words from
 English (or any other language which uses the Latin alphabet) into the
-“Sheep Flemish” language. Sheep Flemish, like its namesake [Pig
+‘Sheep Flemish’ language. Sheep Flemish, like its namesake [Pig
 Latin](https://en.wikipedia.org/wiki/Pig_Latin), is a method of
 translating individual words to obscure their meaning.
 
@@ -23,17 +23,17 @@ written entirely in lowercase, as sheep do not use capital letters on a
 day-to-day basis.
 
 To translate a word into Sheep Flemish, the word is broken down into two
-constituent parts, called the “root” and the “suffix”, which are then
-combined (with a hyphen separating the root and suffix) to give the
+constituent parts, called the ‘**root**’ and the ‘**suffix**’, which are
+then combined (with a hyphen separating the root and suffix) to give the
 fully-translated word.
 
-The two sections of the translated word are created from the “consonant
-clusters” (one or more consecutive consonants) and “vowel clusters” (one
-or more consecutive vowels) in the original word. For consistency, the
-letter “y” is always treated as a consonant. If a word does not have at
-least one consonant cluster and one vowel cluster (e.g. “a”, “by”,
-“oui”, “spry”), then the Sheep Flemish translation of the word is the
-word itself.
+The two sections of the translated word are created from the
+‘**consonant clusters**’ (one or more consecutive consonants) and
+‘**vowel clusters**’ (one or more consecutive vowels) in the original
+word. For consistency, the letter “y” is always treated as a consonant.
+If a word does not have at least one consonant cluster and one vowel
+cluster (e.g. “a”, “by”, “oui”, “spry”), then the Sheep Flemish
+translation of the word is the word itself.
 
 ### Constructing the Root
 
@@ -130,9 +130,10 @@ The following code block uses the built-in vector `letters` alongside
 the `str_flatten` function from `stringr` to create two regular
 expressions; one which detects a cluster of consecutive lowercase vowels
 (aeiou) and another which detects a cluster of consecutive lowercase
-consonants. For the sake of consistency, the letter “y” is always
-treated as a consonant when translating words into Sheep Flemish, even
-though it is sometimes used to represent a vowel sound in English.
+consonants. As mentioned earlier, for the sake of consistency, the
+letter “y” is always treated as a consonant when translating words into
+Sheep Flemish, even though it is sometimes used to represent a vowel
+sound in English.
 
 ``` r
 # Get all lowercase vowels
@@ -317,7 +318,7 @@ test_that("The translation function gives the expected results on different inpu
 })
 ```
 
-    ## Test passed 🎊
+    ## Test passed 😀
 
 ## Testing Thrown Errors
 
@@ -346,7 +347,7 @@ test_that("The translation function throws errors when the conditions are violat
 })
 ```
 
-    ## Test passed 😀
+    ## Test passed 🥳
 
 ## Testing for Altered Inputs
 
@@ -362,7 +363,7 @@ test_that("The translation function does not alter the input", {
 })
 ```
 
-    ## Test passed 😸
+    ## Test passed 🎉
 
 ## Testing Capitalization
 
@@ -382,7 +383,7 @@ test_that("The translation function is the same regardless of capitalization", {
 })
 ```
 
-    ## Test passed 🎉
+    ## Test passed 😀
 
 ## Testing for Non-Letter Characters
 
@@ -403,4 +404,4 @@ test_that("The translation function is the same regardless of any non-letter cha
 })
 ```
 
-    ## Test passed 😀
+    ## Test passed 🎊

@@ -4,7 +4,7 @@ output: github_document
 Roxygen: list(markdown = TRUE)
 ---
 
-In this document, we describe the process of translating words from English (or any other language which uses the Latin alphabet) into the "Sheep Flemish" language. Sheep Flemish, like its namesake [Pig Latin](https://en.wikipedia.org/wiki/Pig_Latin), is a method of translating individual words to obscure their meaning.
+In this document, we describe the process of translating words from English (or any other language which uses the Latin alphabet) into the 'Sheep Flemish' language. Sheep Flemish, like its namesake [Pig Latin](https://en.wikipedia.org/wiki/Pig_Latin), is a method of translating individual words to obscure their meaning.
 
 In addition to describing the translation process, we also create an R function to translate individual words into Sheep Flemish based on the rules provided, which includes providing examples and unit tests to ensure that the function works as intended. 
 
@@ -14,9 +14,9 @@ In order to understand the remainder of the document, it is necessary to cover t
 
 When translating a word into Sheep Flemish, any non-letter characters (e.g. numbers, punctuation, and spaces) are discarded, and the word is written entirely in lowercase, as sheep do not use capital letters on a day-to-day basis. 
 
-To translate a word into Sheep Flemish, the word is broken down into two constituent parts, called the "root" and the "suffix", which are then combined (with a hyphen separating the root and suffix) to give the fully-translated word. 
+To translate a word into Sheep Flemish, the word is broken down into two constituent parts, called the '**root**' and the '**suffix**', which are then combined (with a hyphen separating the root and suffix) to give the fully-translated word. 
 
-The two sections of the translated word are created from the "consonant clusters" (one or more consecutive consonants) and "vowel clusters" (one or more consecutive vowels) in the original word. For consistency, the letter "y" is always treated as a consonant. If a word does not have at least one consonant cluster and one vowel cluster (e.g. "a", "by", "oui", "spry"), then the Sheep Flemish translation of the word is the word itself. 
+The two sections of the translated word are created from the '**consonant clusters**' (one or more consecutive consonants) and '**vowel clusters**' (one or more consecutive vowels) in the original word. For consistency, the letter "y" is always treated as a consonant. If a word does not have at least one consonant cluster and one vowel cluster (e.g. "a", "by", "oui", "spry"), then the Sheep Flemish translation of the word is the word itself. 
 
 ### Constructing the Root
 
@@ -72,7 +72,7 @@ library(tidyverse)
 library(testthat)
 ```
 
-The following code block uses the built-in vector `letters` alongside the `str_flatten` function from `stringr` to create two regular expressions; one which detects a cluster of consecutive lowercase vowels (aeiou) and another which detects a cluster of consecutive lowercase consonants. For the sake of consistency, the letter "y" is always treated as a consonant when translating words into Sheep Flemish, even though it is sometimes used to represent a vowel sound in English.
+The following code block uses the built-in vector `letters` alongside the `str_flatten` function from `stringr` to create two regular expressions; one which detects a cluster of consecutive lowercase vowels (aeiou) and another which detects a cluster of consecutive lowercase consonants. As mentioned earlier, for the sake of consistency, the letter "y" is always treated as a consonant when translating words into Sheep Flemish, even though it is sometimes used to represent a vowel sound in English.
 
 ```{r consonants-and-vowels}
 # Get all lowercase vowels
