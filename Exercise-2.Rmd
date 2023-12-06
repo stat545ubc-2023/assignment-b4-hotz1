@@ -1,0 +1,282 @@
+---
+title: "a de-buig to-bot eep-beesh mish-befl (A Guide to Sheep Flemish)"
+output: github_document
+Roxygen: list(markdown = TRUE)
+---
+
+In this document, we describe the process of translating words from English (or any other language which uses the Latin alphabet) into the "Sheep Flemish" language. Sheep Flemish, like its namesake [Pig Latin](https://en.wikipedia.org/wiki/Pig_Latin), is a method of translating individual words to obscure their meaning.
+
+In addition to describing the translation process, we also create an R function to translate individual words into Sheep Flemish based on the rules provided, which includes providing examples and unit tests to ensure that the function works as intended. 
+
+## Introduction to Sheep Flemish
+
+In order to understand the remainder of the document, it is necessary to cover the rules of translating words into Sheep Flemish. 
+
+When translating a word into Sheep Flemish, any non-letter characters (e.g. numbers, punctuation, and spaces) are discarded, and the word is written entirely in lowercase, as sheep do not use capital letters on a day-to-day basis. 
+
+To translate a word into Sheep Flemish, the word is broken down into two constituent parts, called the "root" and the "suffix", which are then combined (with a hyphen separating the root and suffix) to give the fully-translated word. 
+
+The two sections of the translated word are created from the "consonant clusters" (one or more consecutive consonants) and "vowel clusters" (one or more consecutive vowels) in the original word. For consistency, the letter "y" is always treated as a consonant. If a word does not have at least one consonant cluster and one vowel cluster (e.g. "a", "by", "oui", "spry"), then the Sheep Flemish translation of the word is the word itself. 
+
+### Constructing the Root
+
+The root of the translated Sheep Flemish word depends on the number of consonant and vowel clusters in the original word.
+
+If the original word has multiple vowel clusters and multiple consonant clusters, then the root of the translated word is constructed by removing the first vowel cluster and first consonant cluster of the original word. For example:
+
+- The Sheep Flemish root of "broken" is "<s>bro</s>ken"
+- The Sheep Flemish root of "ballet" is "<s>ba</s>llet"
+- The Sheep Flemish root of "cheese" is "<s>chee</s>se"
+
+If the original word has only one vowel cluster, then the vowel cluster is not removed from the root. Similarly, if the original word has only one consonant cluster, then the consonant cluster is not removed from the root. For example: 
+
+- The Sheep Flemish root of "peach" is "<s>p</s>each" (one vowel cluster, two consonant clusters)
+- The Sheep Flemish root of "teach" is "<s>t</s>each" (one vowel cluster, two consonant clusters)
+- The Sheep Flemish root of "able" is "<s>a</s>ble" (two vowel clusters, one consonant cluster)
+- The Sheep Flemish root of "ogre" is "<s>o</s>gre" (two vowel clusters, one consonant cluster)
+- The Sheep Flemish root of "glee" is "glee" (one vowel cluster, one consonant cluster)
+- The Sheep Flemish root of "tea" is "tea" (one vowel cluster, one consonant cluster)
+
+As we see in the examples above, it is possible for multiple words to have the same root in Sheep Flemish, as the words "peach" and "teach" both have the root "each". 
+
+### Constructing the Suffix
+
+Unlike the roots of words in Sheep Flemish, the suffix is always constructed in the same manner, regardless of the number of vowel and consonant clusters in the original word. 
+
+For any word which is to be translated into Sheep Flemish, the suffix consists of the letter "b" (because sheep make "baaaaaaaa" noises), followed by the first vowel cluster and the first consonant cluster in the word. To ensure that words in Sheep Flemish are somewhat pronounceable, the vowel cluster always precedes the consonant cluster, regardless of which appears first in the original word. For example:
+
+- The Sheep Flemish suffix of "broken" is "bobr" ("b" + "o" + "br")
+- The Sheep Flemish suffix of "cheese" is "beech" ("b" + "ee" + "ch")
+- The Sheep Flemish suffix of "teach" is "beat" ("b" + "ea" + "t")
+- The Sheep Flemish suffix of "ogre" is "bogr" ("b" + "o" + "gr")
+- The Sheep Flemish suffix of "tea" is "beat" ("b" + "ea" + "t")
+
+As we see in the examples above, it is possible for multiple words to have the same suffix in Sheep Flemish, as the words "tea" and "teach" both have the suffix "beat".
+
+### Combining the Root and Suffix
+
+To get the fully-translated word in Sheep Flemish, we simply need to combine the root and the suffix of the word, which are separated from one another with a hyphen. For example:
+
+- The Sheep Flemish translation of "broken" is "ken-bobr" ("ken" + "-" + "bobr")
+- The Sheep Flemish translation of "cheese" is "se-beech" ("se" + "-" + "beech")
+- The Sheep Flemish translation of "teach" is "each-beat" ("each" + "-" + "beat")
+- The Sheep Flemish translation of "ogre" is "gre-bogr" ("gre" + "-" + "bogr")
+- The Sheep Flemish translation of "tea" is "tea-beat" ("tea" + "-" + "beat")
+
+# Code Setup
+
+In order to create the translation function, we will make use of `Roxygen2` to provide detailed function documentation. Additionally, we will import two libraries; `tidyverse`, and `testthat`. The `tidyverse` library is imported so that we have access to the "pipe" function (`%>%`) from the `magrittr` library, and to access many text-related functions from the `stringr` library. The `testthat` library is used to perform the unit tests in the final section of this document.
+
+```{r setup, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(testthat)
+```
+
+The following code block uses the built-in vector `letters` alongside the `str_flatten` function from `stringr` to create two regular expressions; one which detects a cluster of consecutive lowercase vowels (aeiou) and another which detects a cluster of consecutive lowercase consonants. For the sake of consistency, the letter "y" is always treated as a consonant when translating words into Sheep Flemish, even though it is sometimes used to represent a vowel sound in English.
+
+```{r consonants-and-vowels}
+# Get all lowercase vowels
+vowels <- letters[c(1, 5, 9, 15, 21)]
+
+# Regular expression to detect one or more consecutive vowels
+vowel_regex <- paste0("[", stringr::str_flatten(vowels), "]+")
+
+# Get all lowercase consonants
+consos <- letters[-c(1, 5, 9, 15, 21)]
+
+# Regular expression to detect one or more consecutive consonants
+conso_regex <- paste0("[", stringr::str_flatten(consos), "]+")
+```
+
+# Function Definition
+
+The function defined below translates a word into Sheep Flemish based on the rules which are outlined above. The input to this function is a single string of characters, which the function will translate into Sheep Flemish. 
+
+This translation function sanitizes the input by removing any numbers, punctuation, spaces, and other non-letter characters from the input, so the inputs "sheep" and "sh. eep!" will both be translated into "eep-beesh". 
+
+Additionally, the translator turns the input into all lowercase letters, so "flemish", "Flemish", and "FLEMISH" are all translated into "mish-befl". 
+
+```{r one-word-function}
+#' @title Translate words into Sheep Flemish
+#' 
+#' @details This function takes in a single-word input and returns the translation of the provided word in Sheep Flemish.
+#' 
+#' @param `word` A single string which represents a word to be translated into Sheep Flemish. The input is "sanitized" by ignoring all characters except for letters and by transforming the input to be in all lowercase. 
+#' 
+#' @return `translated` A single string which stores the translation of the input (`word`) into Sheep Flemish.
+
+translate_word <- function(word){
+  # Check that the input provided is a character class object
+  if(!is.character(word)){
+    stop(paste0(
+      "This function requires the provided input to be a character ",
+      "string. The input which you provided is a ", class(word),
+      ", not a character."))
+  }
+  
+  # Check that the input provided is single word (i.e. not a vector of strings)
+  if(length(word) != 1){
+    stop(paste0(
+      "This function requires the provided input to be a single ",
+      "string. The input which you provided has length ", length(word), "."))
+  }
+  
+  # Create an all-lowercase copy of the input and remove non-letter characters
+  root <- word %>%
+    stringr::str_to_lower() %>%
+    stringr::str_remove_all(pattern = "[^a-z]")
+  
+  # Count the number of vowel and consonant clusters in the "root" of the word
+  n_vowel_clusters <- length(unlist(stringr::str_extract_all(root, vowel_regex)))
+  n_conso_clusters <- length(unlist(stringr::str_extract_all(root, conso_regex)))
+  
+  # Return the original word if it does not contain both consonants and vowels.
+  # This mostly acts as a failsafe for 1-letter words like "a".
+  if(n_vowel_clusters == 0 | n_conso_clusters == 0){
+    translated <- root
+    return(translated)
+  }
+  
+  # Find the first consonant and first vowel in the word
+  first_vowel_cluster <- stringr::str_extract(root, vowel_regex)
+  first_conso_cluster <- stringr::str_extract(root, conso_regex)
+  
+  # Create the suffix which is appended to the root of the word
+  suffix <- paste0("b", first_vowel_cluster, first_conso_cluster)
+
+  # Remove the first vowel and consonant clusters from the root (if needed)
+  if(n_vowel_clusters > 1){
+    # If there are multiple vowel clusters, remove the first from the root
+    root <- stringr::str_remove(root, first_vowel_cluster)
+  }
+  if(n_conso_clusters > 1){
+    # If there are multiple consonant clusters, remove the first from the root
+    root <- stringr::str_remove(root, first_conso_cluster)
+  }
+  
+  # Add the suffix to the root of the word
+  translated <- paste0(root, "-", suffix)
+  return(translated)
+}
+```
+
+# Examples
+
+Next, we will go over some examples of the function which was defined above. To illustrate the mechanics of the `translate_word` function, we will call this translation function on each of the thirteen words which were used as illustrative examples in the explanation of the Sheep Flemish language. 
+
+```{r examples, comment = NA}
+example_words <- c("a", "by", "oui", "spry", "broken", "ballet", "cheese", 
+                   "peach", "teach", "able", "ogre", "glee", "tea")
+for(word in example_words){
+  translation <- translate_word(word)
+  cat(paste0('The Sheep Flemish translation of \"', word, '\" is ',
+             '\"', translation, '\".', '\n'))
+}
+```
+
+Based on the outputs above, it seems that the `translate_word` function is properly translating the inputs into Sheep Flemish, as the first four inputs above are unchanged, as none of them have consonant and vowel clusters, and the remaining nine inputs are all translated based on the Sheep Flemish construction. 
+
+# Unit Tests
+
+Last, we will cover some unit tests to ensure that the behaviour of the `translate_word` function matches the expected behaviour of the function. As we saw in the Examples section above the translation function does return the expected outputs when individual words are passed into the function, but this does not fully encapsulate the behaviour of the `translate_word` function. 
+
+## Checking the Results
+
+First, we will ensure that the value returned by the `translate_word` function matches the expected result in multiple different cases. When translating a word into Sheep Flemish, the translated word depends on the number of consonant and vowel clusters which are in the word. We will test the `translate_word` function for inputs with different numbers of consonant and vowel clusters to ensure that the function properly translates words into Sheep Flemish in every case. 
+
+```{r test-function-1}
+
+test_that("The translation function gives the expected results on different inputs", {
+  # empty string
+  expect_equal(translate_word(""), "")
+
+  # string has no vowel clusters
+  expect_equal(translate_word("by"), "by")
+  expect_equal(translate_word("dryly"), "dryly")
+
+  # string has no consonant clusters
+  expect_equal(translate_word("a"), "a")
+  expect_equal(translate_word("eieio"), "eieio")
+
+  # one vowel cluster, one consonant cluster
+  expect_equal(translate_word("bee"), "bee-beeb")
+  expect_equal(translate_word("oath"), "oath-boath")
+
+  # one vowel cluster, multiple consonant clusters
+  expect_equal(translate_word("nix"), "ix-bin")
+  expect_equal(translate_word("this"), "is-bith")
+
+  # multiple vowel clusters, one consonant cluster
+  expect_equal(translate_word("ease"), "se-beas")
+  expect_equal(translate_word("idea"), "dea-bid")
+  expect_equal(translate_word("auto"), "to-baut")
+
+  # multiple vowel clusters, multiple consonant clusters
+  expect_equal(translate_word("music"), "sic-bum")
+  expect_equal(translate_word("incredible"), "edible-bincr")
+})
+```
+
+## Testing Thrown Errors
+
+The `translate_word` function is designed to only work on inputs which are a single string (`character`) input. To ensure that this criterion is met, the function checks whether the input is of the class `character`, and whether the number of strings provided is equal to 1. If either of these checks fails, then the function throws an error and does not proceed. 
+
+```{r test-function-2}
+test_that("The translation function throws errors when the conditions are violated", {
+  # The input provided is not a character
+  expect_error(translate_word(TRUE)) # logical input
+  expect_error(translate_word(NA)) # logical input
+  expect_error(translate_word(2)) # numeric input
+  expect_error(translate_word(4.8)) # numeric input
+  expect_error(translate_word(list(c("happy", "birthday")))) # list input
+  
+  # The input has length zero
+  expect_error(translate_word(c()))
+  
+  # The input is a vector of more than 1 word
+  expect_error(translate_word(c("happy", "birthday", "to", "you")))
+  expect_error(translate_word(c("We", "are", "the", "champions")))
+})
+```
+
+## Testing for Altered Inputs
+
+Next, we will check whether the `translate_word` function alters the input of the function in any way while executing.
+
+```{r test-function-3}
+test_that("The translation function does not alter the input", {
+  my_word <- "sheepflemish"
+  my_word_copy <- my_word
+  translate_word(my_word)
+  expect_equal(my_word, my_word_copy)
+})
+```
+## Testing Capitalization
+
+Based on the rules for translating words into Sheep Flemish, the inputted word is treated as if it is all lowercase. We will test whether the outputs of the `translate_word` function are identical regardless of any capital letters in the inputs. 
+
+```{r test-function-4}
+test_that("The translation function is the same regardless of capitalization", {
+  translated_1 <- translate_word("spaghetti")
+  translated_2 <- translate_word("Spaghetti")
+  translated_3 <- translate_word("sPaGhEtTi")
+  expect_equal(translated_1, translated_2)
+  expect_equal(translated_1, translated_3)
+  expect_equal(translated_2, translated_3)
+})
+```
+
+## Testing for Non-Letter Characters
+
+Based on the rules for translating words into Sheep Flemish, every character in the input which is not a letter is removed as part of the "data sanitization" process. We will test whether the outputs of the `translate_word` function are identical regardless of any other characters (spaces, question marks, etc.) in the input. 
+
+```{r test-function-5}
+test_that("The translation function is the same regardless of any non-letter characters", {
+  translated_1 <- translate_word("meatballs")
+  translated_2 <- translate_word("meat. balls??")
+  translated_3 <- translate_word("meatballs! :)")
+  expect_equal(translated_1, translated_2)
+  expect_equal(translated_1, translated_3)
+  expect_equal(translated_2, translated_3)
+})
+```
