@@ -318,7 +318,7 @@ test_that("The translation function gives the expected results on different inpu
 })
 ```
 
-    ## Test passed 😀
+    ## Test passed 🎉
 
 ## Testing Thrown Errors
 
@@ -347,7 +347,7 @@ test_that("The translation function throws errors when the conditions are violat
 })
 ```
 
-    ## Test passed 🥳
+    ## Test passed 🌈
 
 ## Testing for Altered Inputs
 
@@ -363,7 +363,7 @@ test_that("The translation function does not alter the input", {
 })
 ```
 
-    ## Test passed 🎉
+    ## Test passed 😀
 
 ## Testing Capitalization
 
@@ -383,7 +383,7 @@ test_that("The translation function is the same regardless of capitalization", {
 })
 ```
 
-    ## Test passed 😀
+    ## Test passed 🎉
 
 ## Testing for Non-Letter Characters
 
